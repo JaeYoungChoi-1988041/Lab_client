@@ -99,7 +99,7 @@ public sealed class DEBUG_MOVEMENT : ISlimeController
 			case 3:
 				if (Input.GetKeyDown(KeyCode.A))
 				{
-					Targeting(FindObjectOfType<Player>());
+					Targeting(FindObjectOfType<Player1>());
 				}
 				break;
 		}

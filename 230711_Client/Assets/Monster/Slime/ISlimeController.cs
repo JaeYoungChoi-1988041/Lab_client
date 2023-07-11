@@ -68,7 +68,7 @@ public class ISlimeController : MonoBehaviour
 		}
 	}
 
-	protected void Targeting(Player target)
+	protected void Targeting(Player1 target)
 	{
 		if (target != null && !target.IsDead)
 		{
@@ -113,7 +113,7 @@ public class ISlimeController : MonoBehaviour
 	protected void Idle_OnFixedUpdate()
 	{
 		// 1. 타겟팅
-		if (this.GetNextTarget(out Player target))
+		if (this.GetNextTarget(out Player1 target))
 		{
 			Targeting(target);
 			return;
@@ -256,7 +256,7 @@ public class ISlimeController : MonoBehaviour
 	/// </summary>
 	protected virtual void NextAttack()
 	{
-		Player player;
+		Player1 player;
 		GetNextTarget(out player);
 		if (player == _target)
 		{
@@ -480,7 +480,7 @@ public class ISlimeController : MonoBehaviour
 	}
 	#endregion
 
-	protected Player _target;
+	protected Player1 _target;
 	protected NavMeshAgent _agent;
 
 	#region Animation
@@ -624,7 +624,7 @@ public class ISlimeController : MonoBehaviour
 	/// 타겟이 발견되면 반환값이 true며, <paramref name="target"/>에 해당 플레이어(타겟)가 담긴다.<br/>
 	/// 그렇지 않으면 반환값이 false며, <paramref name="target"/>에 null이 담긴다.
 	/// </summary>
-	public bool GetNextTarget(out Player target)
+	public bool GetNextTarget(out Player1 target)
 	{
 		float minDistance = float.PositiveInfinity;
 		target = spawner?.area.GetNearestPlayer(transform.position, out minDistance);
