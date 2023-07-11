@@ -1,0 +1,18 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42e8bbbd700e6c745b624ad967a2ff88, type: 3}
+  m_Name: HPpotion
+  m_EditorClassIdentifier: 
+  type: 1
+  itemName: "\uD3EC\uC158"
+  itemInfo: "\uCCB4\uB825\uD68C\uBCF5 \uC544\uC774\uD15C"
+  itemImage: {fileID: -9022708904772715514, guid: 836d6e180e7c797478e6d79db7a96e6d, type: 3}
