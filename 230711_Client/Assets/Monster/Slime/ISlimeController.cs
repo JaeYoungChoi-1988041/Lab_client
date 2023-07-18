@@ -15,41 +15,119 @@ public struct Timer
 
 	public bool Update(float deltaTime, out float over)
 	{
-		this.elapsed += deltaTime;
-		over = this.elapsed - this.maxTime;
-		if (over >= 0f)
-		{
-			this.elapsed = 0f;// auto reset
-			return true;
-		}
-		return false;
+        bool flag = UpdateWithoutAutoReset(deltaTime, out over);
+        if (flag)
+        {
+            this.elapsed = 0f;// auto reset
+        }
+        return flag;
 	}
+    public bool UpdateWithoutAutoReset(float deltaTime, out float over)
+    {
+        this.elapsed += deltaTime;
+        over = this.elapsed - this.maxTime;
+        if (over >= 0f)
+        {
+            return true;
+        }
+        return false;
+    }
 
-	public float Ratio => Mathf.Clamp01(elapsed / maxTime);
+    public float Ratio => Mathf.Clamp01(elapsed / maxTime);
+}
+
+/// <summary>
+/// Monster Unique IDentifier Interface, MonsterList에서의 인덱스(UID)를 가져오고 설정하는 인터페이스이다.
+/// </summary>
+public interface IMonsterUID
+{
+    int GetID();
+    void SetID(int Id);
 }
 
 [RequireComponent(typeof(SlimeFaceManager))]
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(NavMeshAgent))]
-public class ISlimeController : MonoBehaviour
+public class ISlimeController : MonoBehaviour, IMonsterUID
 {
-	#region State
-	/// <summary>몬스터-슬라임 상태</summary>
-	public enum StateEnum
+    #region IMonsterUID Implements
+    int m_uid;
+    int IMonsterUID.GetID()
+    {
+        return m_uid;
+    }
+    void IMonsterUID.SetID(int Id)
+    {
+        this.m_uid = Id;
+    }
+    #endregion
+
+    #region State
+    /// <summary>몬스터-슬라임 상태</summary>
+    public enum StateEnum
 	{
+        /// <summary>
+        /// Idle
+        /// </summary>
 		Idle,
+        /// <summary>
+        /// 타겟팅된 플레이어를 향해 쫓아가는 상태
+        /// </summary>
 		Walk,
+        /// <summary>
+        /// 쫓기를 일정시간 안에 성공하지 못하여 돌아가는 상태, 체력 회복도 한다.
+        /// </summary>
 		Return,
+        /// <summary>
+        /// 공격범위 안에 있는 타겟을 공격하는 상태
+        /// </summary>
 		Attack,
+        /// <summary>
+        /// 몬스터 소환하는 패턴(킹)
+        /// </summary>
 		Spawn,
+        /// <summary>
+        /// 스킬1 (캐릭터별로 상이)
+        /// </summary>
 		Skill1,
+        /// <summary>
+        /// 스킬2 (캐릭터별로 상이)
+        /// </summary>
 		Skill2,
 		Die,
 		/// <summary>
 		/// reserved, used in test
 		/// </summary>
 		Res1,
-	}
+        /// <summary>
+        /// reserved, used in test
+        /// </summary>
+        Res2,
+        /// <summary>
+        /// reserved, used in test
+        /// </summary>
+        Res3,
+        /// <summary>
+        /// reserved, used in test
+        /// </summary>
+        Res4,
+        /// <summary>
+        /// reserved, used in test
+        /// </summary>
+        Res5,
+        /// <summary>
+        /// reserved, used in test
+        /// </summary>
+        Res6,
+        /// <summary>
+        /// reserved, used in test
+        /// </summary>
+        Res7,
+        /// <summary>
+        /// reserved, used in test
+        /// </summary>
+        Res8,
+    }
 
 	#region <Idle>
 	protected Timer Idle_wanderTimer = new Timer() { maxTime = 7f };
@@ -68,9 +146,9 @@ public class ISlimeController : MonoBehaviour
 		}
 	}
 
-	protected void Targeting(Player1 target)
+	protected void Targeting(Player target)
 	{
-		if (target != null && !target.IsDead)
+		if (target != null && target.ST != StateType.Die)
 		{
 			if (target != this._target)
 			{
@@ -113,7 +191,7 @@ public class ISlimeController : MonoBehaviour
 	protected void Idle_OnFixedUpdate()
 	{
 		// 1. 타겟팅
-		if (this.GetNextTarget(out Player1 target))
+		if (this.GetNextTarget(out Player target))
 		{
 			Targeting(target);
 			return;
@@ -158,7 +236,8 @@ public class ISlimeController : MonoBehaviour
 		this._agent.destination = this._target.transform.position;
 		if (_attackRange.EnteredPlayer.Contains(this._target))
 		{
-			this.ChangeState(StateEnum.Attack);
+            NextAttack();
+			//this.ChangeState(StateEnum.Attack);
 		}
 		else
 		{
@@ -216,6 +295,7 @@ public class ISlimeController : MonoBehaviour
 	private bool Attack_attackStarted = false;
 	private bool Attack_attackEventTrigger = false;
 	private bool Attack_attackEndTrigger = false;
+    public Collider attackCollider;
 
 	/// <summary>
 	/// <see cref="StateEnum.Attack"/> 상태 진입 시 호출.<br/>
@@ -251,16 +331,16 @@ public class ISlimeController : MonoBehaviour
 	}
 
 	/// <summary>
-	/// 공격이 끝난 후 다음 공격을 지정합니다.
+	/// 행동이 끝난 후 다음 공격을 지정합니다.
 	/// 기본(ISlimeController)은 돌격입니다.
 	/// </summary>
 	protected virtual void NextAttack()
 	{
-		Player1 player;
+		Player player;
 		GetNextTarget(out player);
 		if (player == _target)
 		{
-			Attack_OnEnter();
+            ChangeState(StateEnum.Attack);
 		}
 		else
 		{
@@ -285,20 +365,22 @@ public class ISlimeController : MonoBehaviour
 		bool entered = _attackRange.EnteredPlayer.Contains(this._target);
 		if (Attack_attackStarted)
 		{
+            attackCollider.enabled = true;
 			_agent.isStopped = true;
 			if (Attack_attackEventTrigger)
 			{
 				Attack_attackEventTrigger = false;
 				if (entered)
 				{
-					this._target.IncreaseHP(-BaseDmg);
+                    //this._target.IncreaseHP(-BaseDmg);
+                    attackCollider.enabled = false;
 				}
 			}
 			if (Attack_attackEndTrigger)
 			{
 				_agent.isStopped = false;
 				Attack_attackEndTrigger = false;
-				if (entered & !_target.IsDead)
+				if (entered & _target.ST != StateType.Die)
 				{
 					NextAttack();
 				}
@@ -310,7 +392,7 @@ public class ISlimeController : MonoBehaviour
 		}
 		else
 		{
-			if (_target.IsDead)
+			if (_target.ST == StateType.Die)
 			{
 				Targeting(null);
 			}
@@ -356,9 +438,35 @@ public class ISlimeController : MonoBehaviour
 		this._agent.nextPosition = this.transform.position;
 		//this._agent.updatePosition = true;
 	}
-	#endregion
+    #endregion
 
-	private StateEnum _state;
+    #region <Die>
+    protected void Die_OnEnter()
+    {
+        Die_animationEndFlag = false;
+        _animator.SetBool("Die", true);
+    }
+
+    protected void Die_OnAnimEvent(AnimEventType type)
+    {
+        if (type == AnimEventType.End && _animator.GetCurrentAnimatorStateInfo(0).IsName("Die"))
+        {
+            Die_animationEndFlag = true;
+        }
+    }
+
+    private bool Die_animationEndFlag;
+    protected void Die_OnUpdate()
+    {
+        if (Die_animationEndFlag)
+        {
+            _animator.SetBool("Die", false);
+            Return();
+        }
+    }
+    #endregion
+
+    private StateEnum _state;
 	public StateEnum State => _state;
 	#endregion
 
@@ -380,9 +488,10 @@ public class ISlimeController : MonoBehaviour
 	[Header("Stat")]
 	[SerializeField] protected MonsterStat stat;
 	[SerializeField] protected Guage hpGuage;
-	[HideInInspector] public ObjectPoolBehaviour dmgTextPool;
 	public float HP { get; private set; }
 	public bool IsDead { get; private set; }
+
+    [SerializeField] private GameObject dmgTextPrefab;
 
 	/// <summary>
 	/// 슬라임의 스탯에 관하여 초기화한다.
@@ -410,12 +519,18 @@ public class ISlimeController : MonoBehaviour
 			HP = 0f;
 			OnDie();
 		}
-		if (MONSTER_SETTINGS.DMG && dmgTextPool != null)
+		if (MONSTER_SETTINGS.DMG)
 		{
-			GameObject dmgText = (GameObject)dmgTextPool.pool.Get();
-			dmgText.transform.position = this.transform.position;
-			dmgText.GetComponent<Text>().text = (-delta).ToString();
-			dmgText.GetComponent<UIFadeAnim>().pool = dmgTextPool.pool;
+            if (dmgTextPrefab == null)
+            {
+                Debug.LogError("ISlimeController::dmgTextPrefab is null");
+            }
+            else
+            {
+                GameObject dmgText = Instantiate(dmgTextPrefab);
+                dmgText.transform.position = this.transform.position;
+                dmgText.GetComponent<Text>().text = (-delta).ToString();
+            }
 		}
 		if (MONSTER_SETTINGS.FACE)
 		{
@@ -450,11 +565,16 @@ public class ISlimeController : MonoBehaviour
 			}
 			else
 			{
+                OnHit();
 				_DecreaseHP(delta);
 			}
 			hpGuage.SetValue(HP / stat.maxHP);
 		}
 	}
+    private void OnHit()
+    {
+        _face.OverrideColor = Color.red;
+    }
 
 	/// <summary>
 	/// 몬스터가 죽을 때 호출이 된다. 상태는 Die가 된다.
@@ -464,7 +584,6 @@ public class ISlimeController : MonoBehaviour
 		IsDead = true;
 		Debug.Log("Slime is dead...");
 		ChangeState(StateEnum.Die);
-		Return();
 	}
 
 	private void Return()
@@ -480,19 +599,19 @@ public class ISlimeController : MonoBehaviour
 	}
 	#endregion
 
-	protected Player1 _target;
+	protected Player _target;
 	protected NavMeshAgent _agent;
 
 	#region Animation
 	protected Animator _animator;
 	protected SlimeFaceManager _face;
-	#endregion
+    #endregion
 
-	/// <summary>
-	/// MonoBehaviour.Awake<br/>
-	/// 기본 초기화
-	/// </summary>
-	protected void Awake()
+    /// <summary>
+    /// MonoBehaviour.Awake<br/>
+    /// 기본 초기화
+    /// </summary>
+    protected void Awake()
 	{
 		_face = GetComponent<SlimeFaceManager>();
 		_animator = GetComponent<Animator>();
@@ -542,6 +661,7 @@ public class ISlimeController : MonoBehaviour
 	/// </summary>
 	public virtual void OnUpdate()
 	{
+
 	}
 	/// <summary>
 	/// MonoBehaviour.FixedUpdate()
@@ -609,14 +729,18 @@ public class ISlimeController : MonoBehaviour
 				break;
 		}
 	}
+    public bool lockState = false;
 	/// <summary>
 	/// 슬라임의 <see cref="_state"/>를 <paramref name="state"/>로 상태를 전환한다.
 	/// </summary>
-	public void ChangeState(StateEnum state)
+	public void ChangeState(StateEnum state, bool forcely = false)
 	{
-		//Debug.Log(string.Format("{0}->{1}", this.State, state));
-		ExitState(this._state);
-		EnterState(this._state = state);
+        if (forcely == true || !lockState)
+        {
+            //Debug.Log(string.Format("{0}->{1}", this.State, state));
+            ExitState(this._state);
+            EnterState(this._state = state);
+        }
 	}
 
 	/// <summary>
@@ -624,7 +748,7 @@ public class ISlimeController : MonoBehaviour
 	/// 타겟이 발견되면 반환값이 true며, <paramref name="target"/>에 해당 플레이어(타겟)가 담긴다.<br/>
 	/// 그렇지 않으면 반환값이 false며, <paramref name="target"/>에 null이 담긴다.
 	/// </summary>
-	public bool GetNextTarget(out Player1 target)
+	public bool GetNextTarget(out Player target)
 	{
 		float minDistance = float.PositiveInfinity;
 		target = spawner?.area.GetNearestPlayer(transform.position, out minDistance);
@@ -641,5 +765,10 @@ public class ISlimeController : MonoBehaviour
         Vector3 position = _animator.rootPosition;
         position.y = _agent.nextPosition.y;
         _agent.nextPosition = transform.position = position;
+    }
+
+    public override int GetHashCode()
+    {
+        return base.GetHashCode();
     }
 }

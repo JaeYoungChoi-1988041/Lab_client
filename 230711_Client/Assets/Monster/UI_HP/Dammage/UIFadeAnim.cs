@@ -5,40 +5,32 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Graphic))]
 public sealed class UIFadeAnim : MonoBehaviour
 {
-    [HideInInspector] public ObjectPool pool;
-    [SerializeField] private AnimationCurve _anim = default;
-    [SerializeField] private float _duration = default;
-    private float _elapsed;
-    private Graphic _graphic;
+    [SerializeField] private AnimationCurve anim = default;
+    [SerializeField] private float duration = default;
+    private float m_elapsed;
+    private Graphic m_graphic;
 
     private void Awake()
     {
-        _graphic = GetComponent<Graphic>();
+        m_graphic = GetComponent<Graphic>();
     }
 
     private void OnEnable()
     {
-        _elapsed = 0f;
+        m_elapsed = 0f;
     }
 
     private void LateUpdate()
     {
-        _elapsed += Time.deltaTime;
-        if (_elapsed >= _duration)
+        m_elapsed += Time.deltaTime;
+        if (m_elapsed >= duration)
         {
-            if (pool != null)
-            {
-                pool.Return(this.gameObject);
-            }
-            else
-            {
-                Destroy(this.gameObject);
-            }
+            Destroy(this.gameObject);
             return;
         }
-        float alpha = _anim.Evaluate(_elapsed / _duration);
-        Color c = _graphic.color;
+        float alpha = anim.Evaluate(m_elapsed / duration);
+        Color c = m_graphic.color;
         c.a = alpha;
-        _graphic.color = c;
+        m_graphic.color = c;
     }
 }

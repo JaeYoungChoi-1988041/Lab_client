@@ -1,36 +1,44 @@
-﻿#pragma warning disable IDE0051
-#pragma warning disable CS0162
+﻿#pragma warning disable CS0162 // Unreachable code detected
+#pragma warning disable IDE0032 // Use auto-implemented property
+#pragma warning disable IDE0040 // Add accessibility modifiers
+#pragma warning disable IDE0044 // Add readonly modifier
+#pragma warning disable IDE0051 // Remove unused private member
 using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using UnityEngine;
 using URandom = UnityEngine.Random;
 
 [RequireComponent(typeof(TriggerArea))]
 [RequireComponent(typeof(SphereCollider))]
+[StructLayout(LayoutKind.Auto)]
 public class MonsterSpawner : MonoBehaviour
 {
-	public static Vector2 Vector2GetRandomPoint(float radius)
+    [Serializable]
+    public struct Prob
+    {
+        public enum MonsterType
+        {
+            seed = 0,
+            hare = 1
+        }
+        public int count;
+        public MonsterType type;
+    }
+
+    public static Vector2 Vector2GetRandomPoint(float radius)
 	{
 		return URandom.insideUnitCircle * radius;
 	}
 
-	[SerializeField] private int maxCount = 10;
-	[SerializeField] private float coolTimePlayer = 30;
-	[SerializeField] private float coolTimeMonster = 30;
-	private float elapsedPlayer = 0;
-	private float elapsedMonster = 0;
+    List<ISlimeController> monsters = new List<ISlimeController>();
+	[SerializeField] int maxCount = 10;
+	[SerializeField] float coolTimePlayer = 30;
+	[SerializeField] float coolTimeMonster = 30;
+	float elapsedPlayer = 0;
+	float elapsedMonster = 0;
 	[HideInInspector] public TriggerArea area;
-	[HideInInspector] public SphereCollider _collider;
-
-	[Serializable]
-	public struct Prob
-	{
-		public enum MonsterType
-		{
-			seed, rabbit
-		}
-		[Min(1)] public int count;
-		public MonsterType type;
-	}
+	private SphereCollider m_collider;
 	[SerializeField]private Prob[] probs;
 	/// <summary>
 	/// 소환될 몬스터의 유형을 계산하는 메서드
@@ -55,18 +63,10 @@ public class MonsterSpawner : MonoBehaviour
 		throw new Exception("WTF");
 	}
 
-	[SerializeField]private GameObject monster1; // seed
-	[SerializeField]private GameObject monster2; // rabbit
-	public ObjectPool monsters1;
-	public ObjectPool monsters2;
-	public ObjectPoolBehaviour dmgTextPool;
-
 	private void Awake()
 	{
 		area = GetComponent<TriggerArea>();
-		_collider = GetComponent<SphereCollider>();
-		monsters1 = new ObjectPool(monster1, this.transform, typeof(ISlimeController));
-		monsters2 = new ObjectPool(monster2, this.transform, typeof(ISlimeController));
+		m_collider = GetComponent<SphereCollider>();
 	}
 
 	/// <summary>
@@ -74,7 +74,7 @@ public class MonsterSpawner : MonoBehaviour
 	/// </summary>
 	public Vector3 GetRandomPoint()
 	{
-		Vector2 rp = Vector2GetRandomPoint(_collider.radius);
+		Vector2 rp = Vector2GetRandomPoint(m_collider.radius);
 		return transform.localToWorldMatrix.MultiplyPoint(new Vector3(rp.x, 0, rp.y));
 	}
 
@@ -87,65 +87,72 @@ public class MonsterSpawner : MonoBehaviour
 		if (Physics.Raycast(new Vector3(point.x, 1e+10f, point.z), Vector3.down, out RaycastHit hit))
 		{
 			Prob.MonsterType type = GetRandomType();
-			ISlimeController gObj;
 			switch (type)
 			{
 				case Prob.MonsterType.seed:
-					gObj = (ISlimeController)monsters1.Get();
+                    ret = MonsterList.Instance.SeedPool.Get().@object;
 					break;
+                case Prob.MonsterType.hare:
+                    ret = MonsterList.Instance.HarePool.Get().@object;
+                    break;
 				default:
-					gObj = null;
-					break;
+                    ret = null;
+                    return false;
 			}
-			gObj.transform.SetPositionAndRotation(hit.point, Quaternion.Euler(0f, URandom.Range(0f, 360f), 0f));
-			ret = gObj.GetComponent<ISlimeController>();
-			ret.spawnPoint = gObj.transform.position;
-			ret.dmgTextPool = this.dmgTextPool;
+			ret.transform.SetPositionAndRotation(hit.point, Quaternion.Euler(0f, URandom.Range(0f, 360f), 0f));
+			ret.spawnPoint = ret.transform.position;
+            monsters.Add(ret);
 			return true;
 		}
 		ret = null;
 		return false;
 	}
-	/// <summary>
-	/// 몬스터가 죽었을 때 호출되는 메서드, ISlimeController에서 호출이 된다.
-	/// </summary>
-	public void OnSlimeDead(ISlimeController slime)
-	{
-		if (slime is SeedCtrl)
-		{
-			monsters1.Return(slime);
-		}
-		else if (slime is HareCtrl)
-		{
-			monsters2.Return(slime);
-		}
-		else
-		{
-			if (monsters1.tObj.Contains(slime))
-			{
-				monsters1.Return(slime);
-			}
-			else if (monsters2.tObj.Contains(slime))
-			{
-				monsters2.Return(slime);
-			}
-			else
-			{
-				Debug.LogError("MonsterSpawner: Invalid Type");
-			}
-		}
-	}
+    /// <summary>
+    /// 몬스터가 죽었을 때 호출되는 메서드, ISlimeController에서 호출이 된다.
+    /// </summary>
+    public void OnSlimeDead(ISlimeController slime)
+    {
+        if (slime == null) { return; }
+        monsters.Remove(slime);
+        if (slime is SeedCtrl)
+        {
+            MonsterList.Instance.SeedPool.Return(slime);
+        }
+        else if (slime is HareCtrl)
+        {
+            MonsterList.Instance.HarePool.Return(slime);
+        }
+        else
+        {
+            // King은 스포너를 안쓸 가능성이 높다.
+            Debug.LogError("MonsterSpawner::OnSlimeDead - Invalid Slime: " + slime.GetType());
+        }
+    }
 
 	private void FixedUpdate()
 	{
-		int count = monsters1.tObj.Count + monsters2.tObj.Count;
+        int count = monsters.Count;
 		if (area.EnteredPlayer.Count == 0)
 		{
 			elapsedPlayer += Time.fixedDeltaTime;
 			if (elapsedPlayer >= coolTimePlayer)
 			{
-				monsters1.ReturnAll();
-				monsters2.ReturnAll();
+                foreach (var monster in monsters)
+                {
+                    if (monster is SeedCtrl)
+                    {
+                        MonsterList.Instance.SeedPool.Return(monster);
+                    }
+                    else if (monster is HareCtrl)
+                    {
+                        MonsterList.Instance.HarePool.Return(monster);
+                    }
+                    else
+                    {
+                        // King은 스포너를 안쓸 가능성이 높다.
+                        Debug.LogError("MonsterSpawner::FixedUpdate - Invalid Slime: " + monster.GetType());
+                    }
+                }
 				elapsedMonster = 0;
 				return;
 			}
@@ -210,7 +217,7 @@ public class MonsterSpawner : MonoBehaviour
 
 		// 리스트를 돌 때 리스트가 변경되도 상관 없게 방향을 역방향으로 수정
 		// 다만 버그의 위험이 없진 않다.
-		var list = monsters1.tObj;
+		var list = monsters;
 		for (int i = list.Count; i > 0;)
 		{
 			ISlimeController ctrl = (ISlimeController)list[--i];
@@ -222,11 +229,10 @@ public class MonsterSpawner : MonoBehaviour
 	{
 		// 리스트를 돌 때 리스트가 변경되도 상관 없게 방향을 역방향으로 수정
 		// 다만 버그의 위험이 없진 않다.
-		var list = monsters1.tObj;
+		var list = monsters;
 		for (int i = list.Count; i > 0;)
 		{
-			ISlimeController ctrl = (ISlimeController)list[--i];
-			ctrl.OnUpdate();
+			list[--i].OnUpdate();
 		}
 	}
 }

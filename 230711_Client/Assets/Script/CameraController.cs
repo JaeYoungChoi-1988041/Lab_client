@@ -1,6 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-//using Unity.VisualScripting;
+//using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -11,6 +11,7 @@ public class CameraController : MonoBehaviour
     public Transform characterBody;
     public Transform cameraPosition;
 
+    float mv;
     float camera_dist = 0f;
     float camera_width = -5f;
     float camera_height = 2f;
@@ -35,12 +36,13 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         LookAround();
-        if(player.ST != StateType.Die)
+        if(player.ST != StateType.Die && player.AT == AnimType.Idle)
             Move();
     }
 
     private void Move()
     {
+        float mv = player.stats.moveSpeed;
         //캐릭터 움직임 및 카메라가 바라보는 방향으로 w 누를 시 그 방향으로 회전 및 이동
         Vector2 moveInput= new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
         bool isMove = moveInput.magnitude != 0;
@@ -52,7 +54,7 @@ public class CameraController : MonoBehaviour
             Vector3 moveDir = lookForward * moveInput.y + lookRight * moveInput.x;
 
             characterBody.forward = moveDir;
-            characterBody.position += moveDir * Time.deltaTime * player.Stats.moveSpeed;
+            characterBody.position += moveDir * Time.deltaTime * player.stats.moveSpeed;
         }
     }
 
