@@ -373,9 +373,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7472443531638904957}
   - component: {fileID: 6332633160444325355}
-  - component: {fileID: 2446760030367330278}
   - component: {fileID: 7722996404270180192}
   - component: {fileID: 7032959970546135023}
+  - component: {fileID: 2446760030367330278}
   - component: {fileID: 5066772083281616882}
   m_Layer: 0
   m_Name: Seed
@@ -422,20 +422,6 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
---- !u!114 &2446760030367330278
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6258376884618232745}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 30522dd4fd0166e4292881d50da0d39d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  face: {fileID: 11400000, guid: 446f53f2c71ac264e80ccbd4586e9ddc, type: 2}
-  duration: 0
 --- !u!54 &7722996404270180192
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -474,6 +460,20 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!114 &2446760030367330278
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6258376884618232745}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30522dd4fd0166e4292881d50da0d39d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  face: {fileID: 11400000, guid: 446f53f2c71ac264e80ccbd4586e9ddc, type: 2}
+  duration: 0
 --- !u!114 &5066772083281616882
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -486,12 +486,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5b54939276331a54db565c274da1ec72, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  attackCollider: {fileID: 0}
   spawner: {fileID: 0}
   _perceiveArea: {fileID: 5973258777381314772}
   _attackRange: {fileID: 619306290044087378}
   stat: {fileID: 11400000, guid: 3dd2297ca47816c499f46f4eedda007b, type: 2}
   hpGuage: {fileID: 3948805018293331230}
-  dmgTextPool: {fileID: 0}
+  dmgTextPrefab: {fileID: 0}
+  spawnPoint: {x: 0, y: 0, z: 0}
+  lockState: 0
   prob: 0
 --- !u!1 &6805894652737445422
 GameObject:

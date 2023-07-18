@@ -1,11 +1,11 @@
-﻿#pragma warning disable IDE0051
+﻿#pragma warning disable IDE0051 // Remove unused private member
 using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider))]
 public class TriggerArea : MonoBehaviour
 {
-	public HashSet<Player1> EnteredPlayer { get; private set; } = new HashSet<Player1>();
+	public HashSet<Player> EnteredPlayer { get; private set; } = new HashSet<Player>();
 	public HashSet<ISlimeController> EnteredMonster { get; private set; } = new HashSet<ISlimeController>();
 
 	/// <summary>
@@ -31,7 +31,7 @@ public class TriggerArea : MonoBehaviour
 		}
 		else
 		{
-			if (other.TryGetComponent(out Player1 player))
+			if (other.TryGetComponent(out Player player))
 			{
 				EnteredPlayer.Add(player);
 			}
@@ -60,7 +60,7 @@ public class TriggerArea : MonoBehaviour
 		}
 		else
 		{
-			if (other.TryGetComponent(out Player1 player))
+			if (other.TryGetComponent(out Player player))
 			{
 				EnteredPlayer.Remove(player);
 			}
@@ -72,13 +72,13 @@ public class TriggerArea : MonoBehaviour
 	/// 플레이어가 발견된 경우 <paramref name="minDistance"/>에 거리의 제곱이 담기며, 그렇지 않은 경우 <see cref="float.PositiveInfinity"/>가 담깁니다.<br/>
 	/// 거리는 높이를 무시한 XZ 평면에서의 값입니다.
 	/// </summary>
-	public Player1 GetNearestPlayer(Vector3 position, out float minDistanceSqr)
+	public Player GetNearestPlayer(Vector3 position, out float minDistanceSqr)
 	{
 		minDistanceSqr = float.PositiveInfinity;
-		Player1 ret = null;
-		foreach (Player1 player in EnteredPlayer)
+		Player ret = null;
+		foreach (Player player in EnteredPlayer)
 		{
-			if (player == null || player.IsDead || !player.gameObject.activeInHierarchy)
+			if (player == null || player.ST == StateType.Die || !player.gameObject.activeInHierarchy)
 			{
 				continue;
 			}

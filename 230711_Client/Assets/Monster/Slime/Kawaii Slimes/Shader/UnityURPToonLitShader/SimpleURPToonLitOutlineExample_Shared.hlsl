@@ -1,7 +1,5 @@
 // For more information, visit -> https://github.com/ColinLeung-NiloCat/UnityURPToonLitShaderExample
 
-// #pragma once is a safe guard best practice in almost every .hlsl (need Unity2020 or up), 
-// doing this can make sure your .hlsl's user can include this .hlsl anywhere anytime without producing any multi include conflict
 #pragma once
 
 // We don't have "UnityCG.cginc" in SRP/URP's package anymore, so:

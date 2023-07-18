@@ -42,17 +42,16 @@ public sealed class SlimeMov : MonoBehaviour
         }
     }
 
-    private Vector3 prev;
-    private Vector3 prevDir;
+    private Vector3 pre;
     public void Jump(Vector3 dest)
     {
+        agent.destination = dest;
         if (!doJump)
         {
-            prev = transform.position;
+            pre = transform.position;
         }
         if (!isJumping)
         {
-            agent.destination = dest;
             NavMeshPath path = agent.path;
             Vector3[] corners = path.corners;
             if (corners.Length >= 2)
@@ -67,28 +66,34 @@ public sealed class SlimeMov : MonoBehaviour
 
                 float dot = Vector3.Dot(dir, dir2); // cos theta
 
-                Vector3 dir3 = dest - prev;
-                dir3.y = 0;
-                dir3.Normalize();
+                Vector3 dir10 = transform.position - pre;
+                dir10.y = 0;
+                dir10.Normalize();
 
-                Vector4 dir4 = dest - transform.position;
-                dir4.y = 0;
-                dir4.Normalize();
+                dest = corners[corners.Length - 1]; // .... 뭔 해결이 안되
 
-                if (dot > 0.98f)
+                Vector3 dir11 = dest - pre;
+                dir11.y = 0;
+                dir11.Normalize();
+
+                Vector4 dir12 = dest - transform.position;
+                dir12.y = 0;
+                dir12.Normalize();
+
+                float dotn = Vector3.Dot(dir10, dir12);
+                float dotp = Vector3.Dot(dir10, dir11);
+
+                if (dot > 0.99f)
                 {
                     doJump = true;
                     isJumping = true;
                     animator.SetFloat("Speed", 1f);
-                    prevDir = Vector3.zero;
                 }
-                else if (doJump = true && Vector3.Dot(dir3, prevDir) > 0.01 && Vector3.Dot(dir4, prevDir) < -0.01)
+                else if (doJump && dotn < 0 && dotp > 0)
                 //else if (doJump && dot < 0)
                 {
                     doJump = false;
                 }
-
-                prevDir = prev;
             }
         }
     }

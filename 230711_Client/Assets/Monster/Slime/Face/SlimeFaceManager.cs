@@ -2,10 +2,13 @@
 
 public class SlimeFaceManager : MonoBehaviour
 {
+    private Material mat0;
     private Material mat;
     private void Awake()
     {
-        mat = GetComponentInChildren<SkinnedMeshRenderer>().materials[1];
+        var renderer = GetComponentInChildren<SkinnedMeshRenderer>();
+        mat0 = renderer.materials[0];
+        mat = renderer.materials[1];
     }
 
     public SlimeFace face;
@@ -13,6 +16,10 @@ public class SlimeFaceManager : MonoBehaviour
     private Texture overrideTex;
     [HideInInspector] public float duration;
     private float elapsed;
+
+    private Color overrideColor;
+    [HideInInspector] public float duration2 = 1f;
+    private float elapsed2;
 
     /// <summary>
     /// 베이스 표정을 지정한다.
@@ -56,12 +63,37 @@ public class SlimeFaceManager : MonoBehaviour
         }
     }
 
+    private Color cachedHint = Color.white;
+    public Color OverrideColor
+    {
+        get => this.overrideColor;
+        set
+        {
+            if (this.overrideColor != value)
+            {
+                this.overrideColor = value;
+                elapsed2 = 0f;
+            }
+        }
+    }
+
+    private readonly int id1 = Shader.PropertyToID("_HintColor");
+
     private void Update()
     {
         elapsed += Time.deltaTime;
         if (elapsed >= duration)
         {
             OverrideTexture = null;
+        }
+        elapsed2 += Time.deltaTime;
+        float ratio = elapsed2 / duration2;
+        float cratio = Mathf.Clamp01(ratio);
+        Color hint = Color.Lerp(overrideColor, Color.white, cratio);
+        if (hint != cachedHint)
+        {
+            mat0.SetColor(id1, hint);
+            mat.SetColor(id1, hint);
         }
     }
 }
