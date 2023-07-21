@@ -28,7 +28,7 @@ public class Weapon : MonoBehaviour
         {
             if (this.gameObject.CompareTag("Arrow") || this.gameObject.CompareTag("Magic")) //원거리 공격시
                 StartCoroutine(Shotobj());
-            var monster = other.GetComponentInChildren<ISlimeController>();
+            var monster = other.GetComponentInParent<ISlimeController>();
             if (!enteredMonster.Contains(monster))
             {
                 enteredMonster.Add(monster); // [return]bool 값을 이용해 contains 수행을 한 번 줄일 수 있다.

@@ -198,6 +198,51 @@ Transform:
   m_Father: {fileID: 52385695144292276}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5150749447090176254
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2208327770292526378}
+  - component: {fileID: 4768684795139104210}
+  m_Layer: 8
+  m_Name: '[Trigger]Body'
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2208327770292526378
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5150749447090176254}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 4922176651591310315}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!136 &4768684795139104210
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5150749447090176254}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  m_Radius: 2.45
+  m_Height: 9.8
+  m_Direction: 1
+  m_Center: {x: 0, y: 2, z: 0}
 --- !u!1 &6093613692404039740
 GameObject:
   m_ObjectHideFlags: 0
@@ -237,7 +282,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6895771901594683953}
-  - component: {fileID: 999913247525870984}
+  - component: {fileID: 6485744621423230582}
   - component: {fileID: 3400194760952075674}
   m_Layer: 0
   m_Name: '[Trigger]PerceiveRange'
@@ -258,20 +303,21 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4922176651591310315}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &999913247525870984
-SphereCollider:
+--- !u!136 &6485744621423230582
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7296605948417063376}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
   m_Radius: 40
+  m_Height: 160
+  m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
 --- !u!114 &3400194760952075674
 MonoBehaviour:
@@ -375,7 +421,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2395608853788506296}
-  - component: {fileID: 1602795525662592295}
+  - component: {fileID: 4604058322106503646}
   - component: {fileID: 7638255660806768252}
   m_Layer: 0
   m_Name: '[Trigger]AttackRange'
@@ -396,20 +442,21 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4922176651591310315}
-  m_RootOrder: 2
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1602795525662592295
-SphereCollider:
+--- !u!136 &4604058322106503646
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7873807454171613917}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
   m_Radius: 8
+  m_Height: 32
+  m_Direction: 1
   m_Center: {x: 0, y: 2, z: 0}
 --- !u!114 &7638255660806768252
 MonoBehaviour:
@@ -457,6 +504,7 @@ Transform:
   m_Children:
   - {fileID: 18131452486547486}
   - {fileID: 7295602651178318169}
+  - {fileID: 2208327770292526378}
   - {fileID: 2395608853788506296}
   - {fileID: 6895771901594683953}
   - {fileID: 6367815163533702470}
@@ -532,7 +580,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8f77e3326a50b7d499da59415bb7eb45, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  attackCollider: {fileID: 1959892811305378201}
+  attackCollider: {fileID: 0}
   spawner: {fileID: 0}
   _perceiveArea: {fileID: 3400194760952075674}
   _attackRange: {fileID: 7638255660806768252}
@@ -562,14 +610,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6367815163533702470}
-  - component: {fileID: 1959892811305378201}
-  m_Layer: 0
+  - component: {fileID: 4229463623982916194}
+  m_Layer: 8
   m_Name: '[Trigger]AttackCollider'
-  m_TagString: Untagged
+  m_TagString: MonsterAttack
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &6367815163533702470
 Transform:
   m_ObjectHideFlags: 0
@@ -582,20 +630,21 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 4922176651591310315}
-  m_RootOrder: 4
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!135 &1959892811305378201
-SphereCollider:
+--- !u!136 &4229463623982916194
+CapsuleCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8515074069015789289}
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_Enabled: 1
-  serializedVersion: 2
   m_Radius: 2.3
+  m_Height: 9.2
+  m_Direction: 1
   m_Center: {x: 0, y: 1.8, z: 0.3}
 --- !u!1 &8637451069547282174
 GameObject:
@@ -726,8 +775,17 @@ PrefabInstance:
       propertyPath: m_Name
       value: '[Renderer]Bar'
       objectReference: {fileID: 0}
+    - target: {fileID: 247567066292992839, guid: 1b0497d2fd4431a4e9a63d4ac9622def, type: 3}
+      propertyPath: m_Layer
+      value: 5
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 1b0497d2fd4431a4e9a63d4ac9622def, type: 3}
+--- !u!4 &7295602651178318169 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 127225154449651578, guid: 1b0497d2fd4431a4e9a63d4ac9622def, type: 3}
+  m_PrefabInstance: {fileID: 7276921374819913251}
+  m_PrefabAsset: {fileID: 0}
 --- !u!114 &664132987277930460 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7911601894312075775, guid: 1b0497d2fd4431a4e9a63d4ac9622def, type: 3}
@@ -739,8 +797,3 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1c54fe23a1eebc34d9bc42aa7ac25350, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!4 &7295602651178318169 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 127225154449651578, guid: 1b0497d2fd4431a4e9a63d4ac9622def, type: 3}
-  m_PrefabInstance: {fileID: 7276921374819913251}
-  m_PrefabAsset: {fileID: 0}

@@ -422,11 +422,16 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 				}
 				else
 				{
-					this.ChangeState(StateEnum.Walk);
+                    Attack_WhenExit();
 				}
 			}
 		}
 	}
+
+    public virtual void Attack_WhenExit()
+    {
+        this.ChangeState(StateEnum.Walk);
+    }
 
 	/// <summary>
 	/// <see cref="StateEnum.Attack"/> 상태 진출 시 호출된다.<br/>
@@ -474,6 +479,10 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 	/// 자신을 소환한 스포너
 	/// </summary>
 	[HideInInspector] public MonsterSpawner spawner;
+    /// <summary>
+    /// 자신을 소환한 킹(보스)
+    /// </summary>
+    [HideInInspector] public KingCtrl king;
 	/// <summary>
 	/// 인식 범위
 	/// </summary>
@@ -500,8 +509,8 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 		this.HP = stat.maxHP;
 		this.IsDead = false;
 		this._agent.speed = stat.moveSpeed;
-		this._perceiveArea.GetComponent<SphereCollider>().radius = this.stat.perceiveRange / 2.0375f; // Inv Scale
-		this._perceiveArea.GetComponent<SphereCollider>().radius = this.stat.attackRange / 2.0375f; // Inv Scale
+		//this._perceiveArea.GetComponent<SphereCollider>().radius = this.stat.perceiveRange / 2.0375f; // Inv Scale
+		//this._perceiveArea.GetComponent<SphereCollider>().radius = this.stat.attackRange / 2.0375f; // Inv Scale
 		this._animator.SetFloat("Attack Speed", stat.attackSpeed);
 		hpGuage.SetValue(1f);
 	}
@@ -587,14 +596,22 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 
 	private void Return()
 	{
-		if (this.spawner != null)
-		{
-			this.spawner.OnSlimeDead(this);
-		}
-		else
-		{
-			Destroy(base.gameObject);
-		}
+        if (this.spawner != null)
+        {
+            this.spawner.OnSlimeDead(this);
+        }
+        else
+        {
+            if (this.king != null)
+            {
+                this.king.OnSeedDead(this);
+            }
+            else
+            {
+                Debug.Log("No Spawner -> Destroy");
+                Destroy(base.gameObject);
+            }
+        }
 	}
 	#endregion
 
@@ -612,7 +629,7 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
     /// </summary>
     protected void Awake()
 	{
-		_face = GetComponent<SlimeFaceManager>();
+		_face = GetComponentInChildren<SlimeFaceManager>();
 		_animator = GetComponent<Animator>();
 		_agent = GetComponent<NavMeshAgent>();
 		hpGuage.Init();
