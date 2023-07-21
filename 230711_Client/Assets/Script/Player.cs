@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     public static JobType JT;
 
     public Stats stats = new Stats();
-    private All all = new All();
+    public All all = new All();
     public Stats Stats
     {
         get { return stats; }
@@ -29,8 +29,7 @@ public class Player : MonoBehaviour
     public float curMP;
     public int curexp;
 
-    /*public GameObject spawnPos;
-    public MeshCollider spawnpos;*/
+    public BoxCollider spawnPos;
 
     protected static BoxCollider weaponpos;
     protected delegate void OnOff();

@@ -8,9 +8,6 @@ public class TS : MonoBehaviour
 
     private Player player;
     public GameObject play;
-    public GameObject wbtn;
-    public GameObject abtn;
-    public GameObject mbtn;
 
     private void Update()
     {
@@ -23,12 +20,16 @@ public class TS : MonoBehaviour
 
     public void PlusHp()
     {
-        player.stats.maxHp += 50;
-        Debug.Log(player.stats.maxHp);
+        player.all.level += 1;
+        Debug.Log(player.all.level);
     }
     public void MinusHp()
     {
-        player.stats.maxHp -= 50;
-        Debug.Log(player.stats.maxHp);
+        player.curHP -= 1;
+        Debug.Log(player.All.level);
+    }
+    public void Recovery()
+    {
+        player.curMP = player.stats.maxMp;
     }
 }

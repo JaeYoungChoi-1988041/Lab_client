@@ -30,14 +30,19 @@ public class CameraController : MonoBehaviour
         anim = characterBody.GetComponent<Animator>();
         camera_dist = Mathf.Sqrt(camera_width * camera_width + camera_height * camera_height);//camera_width * camera_width + camera_height* camera_height
         dir = new Vector3(0, camera_height, camera_width).normalized;
+
+        //Cursor.visible = false;                     //마우스 커서가 보이지 않게 함
+        //Cursor.lockState = CursorLockMode.Locked;   //마우스 커서를 고정시킴
     }
 
     // Update is called once per frame
     void Update()
     {
-        LookAround();
         if(player.ST != StateType.Die && player.AT == AnimType.Idle)
+        {
+            LookAround();
             Move();
+        }
     }
 
     private void Move()

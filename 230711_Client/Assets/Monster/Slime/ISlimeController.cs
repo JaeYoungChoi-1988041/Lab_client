@@ -2,7 +2,7 @@
 // MonoBehaviour.FixedUpdate() -> MonsterSpawner.FixedUpdate()
 // MonoBehaviour.Update() -> MonsterSpawner.Update()
 
-#pragma warning disable IDE0032
+#pragma warning disable IDE0032 // Use auto-implemented property
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -45,7 +45,6 @@ public interface IMonsterUID
     void SetID(int Id);
 }
 
-[RequireComponent(typeof(SlimeFaceManager))]
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(NavMeshAgent))]
 public class ISlimeController : MonoBehaviour, IMonsterUID
@@ -309,7 +308,7 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 		Attack_attackEndTrigger = false;
 		if (MONSTER_SETTINGS.FACE)
 		{
-			this._face.BaseTexture = this._face.face.GetTexture(SlimeFace.Type.Attack);
+			this._face.BaseTexture = this._face.face.GetTexture(SlimeFace.Type.ATK);
 		}
 	}
 
@@ -535,7 +534,7 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 		if (MONSTER_SETTINGS.FACE)
 		{
 			_face.duration = 0.75f;
-			_face.OverrideTexture = _face.face.GetTexture(SlimeFace.Type.Damage);
+			_face.OverrideTexture = _face.face.GetTexture(SlimeFace.Type.DMG);
 		}
 	}
 	/// <summary>
@@ -619,7 +618,7 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 		hpGuage.Init();
 	}
 
-	public Vector3 spawnPoint;
+	[HideInInspector] public Vector3 spawnPoint;
 	/// <summary>
 	/// MonoBehaviour.OnEnable<br/>
 	/// 스폰 될 시 자동으로 호출되는 초기화 메서드<br/>

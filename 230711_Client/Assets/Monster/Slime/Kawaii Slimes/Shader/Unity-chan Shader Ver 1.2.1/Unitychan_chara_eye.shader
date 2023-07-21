@@ -12,12 +12,12 @@ Shader "UnityChan/Eye"
 		_HintColor("Hint Color", Color) = (1, 1, 1, 1) // final mul
 	}
 
-		SubShader
+	SubShader
 	{
 		Tags
 		{
-			"RenderType" = "Opaque"
-			"Queue" = "Geometry"
+			"RenderType" = "TransparentCutout"
+			"Queue" = "AlphaTest"
 			"LightMode" = "ForwardBase"
 		}
 

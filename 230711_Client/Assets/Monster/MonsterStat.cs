@@ -25,5 +25,5 @@ public class MonsterStat : ScriptableObject
     public int exp;
 
     /// <summary> 보상(gold) </summary>
-    public int reward;
+    public int gold;
 }

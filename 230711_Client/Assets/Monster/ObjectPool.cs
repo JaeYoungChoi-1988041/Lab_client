@@ -5,8 +5,9 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObjectPool<T> where T : class
+public class ObjectPool<T> where T : class, IMonsterUID
 {
+    // PooledObject 클래스는 일부 상황에서 T와 겸용이 가능합니다.
     public class PooledObject : IEquatable<T>, IEquatable<PooledObject>
     {
         public bool active;
@@ -55,11 +56,11 @@ public class ObjectPool<T> where T : class
         }
     }
 
-    /// <summary><see cref="PooledObject.active"/>=<see langword="false"/>인 오브젝트를 생성합니다.</summary>
+    /// <summary> <see cref="PooledObject.active"/>=<see langword="false"/>인 오브젝트를 생성합니다. </summary>
     private readonly Func<T> m_instantiate;
-    /// <summary><see cref="PooledObject.@object"/>의 자체 active를 설정합니다.</summary>
+    /// <summary> <see cref="PooledObject.@object"/>의 자체 active를 설정합니다. </summary>
     private readonly Action<T, bool> m_setActive;
-    /// <summary>모든 오브젝트에 대한 리스트입니다.</summary>
+    /// <summary> 모든 오브젝트에 대한 리스트입니다. </summary>
     public readonly List<PooledObject> All = new List<PooledObject>();
     /// <summary> 다음 비활성화되어 있는 오브젝트의 인덱스입니다. -1이면 비활성화되어 있는 오브젝트는 없습니다. </summary>
     private int m_nextFObj = -1;
@@ -74,11 +75,11 @@ public class ObjectPool<T> where T : class
 #if DEBUG
         if (instantiate == null)
         {
-            Debug.LogWarning("ObjectPool::.ctor() - [instance field] instantiate is null");
+            Debug.LogWarning("ObjectPool::.ctor() - [field]instantiate is null");
         }
         if (setActive == null)
         {
-            Debug.LogWarning("ObjectPool::.ctor() - [instance field] setActive is null");
+            Debug.LogWarning("ObjectPool::.ctor() - [field]setActive is null");
         }
 #endif
     }
@@ -89,21 +90,25 @@ public class ObjectPool<T> where T : class
         if (m_instantiate == null)
         {
 #if DEBUG
-            Debug.LogError("ObjectPool::Alloc() - [instance field] instantiate is null");
+            Debug.LogError("ObjectPool::Alloc() - [field]instantiate is null");
 #endif
             return;
         }
         PooledObject var = new PooledObject(m_instantiate());
+        int id = All.Count; // index
+        var.@object.SetID(id);
         All.Add(var);
         if (m_nextFObj == -1)
         {
-            m_nextFObj = All.Count - 1;
+            m_nextFObj = id;
         }
     }
     /// <summary><paramref name="obj"/>을 등록합니다.</summary>
     /// <param name="obj">등록할 오브젝트입니다.</param>
     public void Alloc(PooledObject obj)
     {
+        int id = All.Count;
+        obj.@object.SetID(id);
         All.Add(obj);
         if (obj.active == false)
         {
@@ -223,12 +228,12 @@ public class ObjectPool<T> where T : class
             if (index >= len)
             {
 #if DEBUG
-                Debug.LogWarning("ObjectPool::this[int index] - ([instance field] All).Count is greater than or equal to [parameter] len");
+                Debug.LogWarning("ObjectPool::this[int index] - ([field]All).Count is greater than or equal to [param]len");
 #endif
                 if (m_instantiate == null)
                 {
 #if DEBUG
-                    Debug.LogError("ObjectPool::this[int index] - [instance field] m_instantiate is null");
+                    Debug.LogError("ObjectPool::this[int index] - [field]m_instantiate is null");
 #endif
                     return null;
                 }
@@ -239,5 +244,19 @@ public class ObjectPool<T> where T : class
             }
             return All[index];
         }
+    }
+    
+    /// <summary>
+    /// check if id is correct
+    /// </summary>
+    public bool CheckIntegrity(T obj)
+    {
+        int id = obj.GetID();
+        if (All.Count > id && id > 0)
+        {
+            T var = All[id].@object;
+            return var == obj;
+        }
+        return false;
     }
 }

@@ -3,7 +3,12 @@ guid: f2a3db631730e82448474e73c11f59e7
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - IDL: {fileID: 2800000, guid: 2e0e5994249a31640bf4045362e1333e, type: 3}
+  - MOV: {fileID: 2800000, guid: a199070e943674e4fb723dd5bfedfa91, type: 3}
+  - JMP: {fileID: 2800000, guid: f261f5e5642a122459949a398033d017, type: 3}
+  - ATK: {fileID: 2800000, guid: 782203f93d5b797459a22445a1f1299d, type: 3}
+  - DMG: {fileID: 2800000, guid: b05ea8b41aaa2f240ac3a19fd77afbc7, type: 3}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

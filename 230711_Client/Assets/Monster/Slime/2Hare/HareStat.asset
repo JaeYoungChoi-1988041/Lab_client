@@ -9,6 +9,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
+  m_Script: {fileID: 11500000, guid: 509b78020e00f134ea23eb09119d84f6, type: 3}
   m_Name: HareStat
   m_EditorClassIdentifier: 
+  maxHP: 250
+  attack: 25
+  attackSpeed: 1.5
+  moveSpeed: 2
+  attackRange: 2
+  perceiveRange: 10
+  exp: 8
+  gold: 5

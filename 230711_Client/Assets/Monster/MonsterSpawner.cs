@@ -215,7 +215,7 @@ public class MonsterSpawner : MonoBehaviour
             }
         }
 
-		// 리스트를 돌 때 리스트가 변경되도 상관 없게 방향을 역방향으로 수정
+		// 리스트를 돌 때 리스트가 변경(예: 사망?)되도 상관 없게 방향을 역방향으로 수정
 		// 다만 버그의 위험이 없진 않다.
 		var list = monsters;
 		for (int i = list.Count; i > 0;)
@@ -227,7 +227,7 @@ public class MonsterSpawner : MonoBehaviour
 
 	private void Update()
 	{
-		// 리스트를 돌 때 리스트가 변경되도 상관 없게 방향을 역방향으로 수정
+		// 리스트를 돌 때 리스트가 변경(예: 사망?)되도 상관 없게 방향을 역방향으로 수정
 		// 다만 버그의 위험이 없진 않다.
 		var list = monsters;
 		for (int i = list.Count; i > 0;)
