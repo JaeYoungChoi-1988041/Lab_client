@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 509b78020e00f134ea23eb09119d84f6, type: 3}
   m_Name: SeedStat
   m_EditorClassIdentifier: 
-  maxHP: 10
-  attack: 10
+  maxHP: 100
+  attack: 15
   attackSpeed: 1
-  moveSpeed: 10
-  attackRange: 10
-  perceiveRange: 2
+  moveSpeed: 1.5
+  attackRange: 2
+  perceiveRange: 10
   exp: 3
-  reward: 3
+  gold: 2

@@ -6,12 +6,13 @@ using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
 public class Mage : Player
 {
     bool attack;
+    bool skill1;
+    bool skill2;
     public GameObject magic;
     public ParticleSystem attackef;
 
     Transform magicpos;
-    GameObject weapon;
-
+    Weapon WPdmg;
     WaitForSeconds WFS035 = new WaitForSeconds(0.35f);
     protected override void Start()
     {
@@ -30,13 +31,30 @@ public class Mage : Player
     void AttackInput()
     {
         if (!attack && Input.GetMouseButton(0))
-            StartCoroutine(AttackAction());
-        else if (Input.GetKeyDown(KeyCode.Alpha1))
-            StartCoroutine(LotusExplosion());
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-            StartCoroutine(ShiningWave());
-        else if (Input.GetKeyDown(KeyCode.Alpha3))
-            StartCoroutine(ManaSpring());
+            AttackAnim(AnimType.Attack);
+        else if (Input.GetKeyDown(KeyCode.Alpha1) && curMP > 30 && !skill1)
+            AttackAnim(AnimType.Skill1);
+        else if (all.level > 2 && Input.GetKeyDown(KeyCode.Alpha3) && curMP > 60 && !skill2)
+            AttackAnim(AnimType.Skill2);
+    }
+    void AttackAnim(AnimType type)
+    {
+        switch (type)
+        {
+            case AnimType.Attack:
+                StartCoroutine(AttackAction());
+                break;
+            case AnimType.Skill1:
+                {
+                    StartCoroutine(LotusExplosion());
+                }
+                break;
+            case AnimType.Skill2:
+                {
+                    StartCoroutine(ShiningWave());
+                }
+                break;
+        }
     }
     /// <summary>
     /// 기본공격
@@ -58,7 +76,9 @@ public class Mage : Player
     }
     void Shot() //기본공격 생성
     {
-        weapon = Instantiate(magic, magicpos.position, magicpos.rotation);
+        GameObject weapon = Instantiate(magic, magicpos.position, magicpos.rotation);
+        WPdmg = weapon.GetComponentInChildren<Weapon>();
+        WPdmg.playerDMG = stats.damage;
         Rigidbody weaponr = weapon.GetComponent<Rigidbody>();
         weaponr.velocity = Vector3.Lerp(magicpos.position, magicpos.forward * 10, 1f);
     }

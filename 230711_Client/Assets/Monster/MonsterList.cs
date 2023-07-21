@@ -63,4 +63,9 @@ public class MonsterList : MonoBehaviour
         seedPool = new ObjectPool<ISlimeController>(InstantiateSeed, SetActive);
         harePool = new ObjectPool<ISlimeController>(InstantiateHare, SetActive);
     }
+
+    private void FixedUpdate()
+    {
+        
+    }
 }

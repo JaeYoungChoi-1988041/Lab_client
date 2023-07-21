@@ -2,7 +2,7 @@
 // MonoBehaviour.FixedUpdate() -> MonsterSpawner.FixedUpdate()
 // MonoBehaviour.Update() -> MonsterSpawner.Update()
 
-#pragma warning disable IDE0032
+#pragma warning disable IDE0032 // Use auto-implemented property
 using UnityEngine;
 using UnityEngine.AI;
 using UnityEngine.UI;
@@ -45,7 +45,6 @@ public interface IMonsterUID
     void SetID(int Id);
 }
 
-[RequireComponent(typeof(SlimeFaceManager))]
 [RequireComponent(typeof(Animator))]
 [RequireComponent(typeof(NavMeshAgent))]
 public class ISlimeController : MonoBehaviour, IMonsterUID
@@ -309,7 +308,7 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 		Attack_attackEndTrigger = false;
 		if (MONSTER_SETTINGS.FACE)
 		{
-			this._face.BaseTexture = this._face.face.GetTexture(SlimeFace.Type.Attack);
+			this._face.BaseTexture = this._face.face.GetTexture(SlimeFace.Type.ATK);
 		}
 	}
 
@@ -423,11 +422,16 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 				}
 				else
 				{
-					this.ChangeState(StateEnum.Walk);
+                    Attack_WhenExit();
 				}
 			}
 		}
 	}
+
+    public virtual void Attack_WhenExit()
+    {
+        this.ChangeState(StateEnum.Walk);
+    }
 
 	/// <summary>
 	/// <see cref="StateEnum.Attack"/> 상태 진출 시 호출된다.<br/>
@@ -475,6 +479,10 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 	/// 자신을 소환한 스포너
 	/// </summary>
 	[HideInInspector] public MonsterSpawner spawner;
+    /// <summary>
+    /// 자신을 소환한 킹(보스)
+    /// </summary>
+    [HideInInspector] public KingCtrl king;
 	/// <summary>
 	/// 인식 범위
 	/// </summary>
@@ -501,8 +509,8 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 		this.HP = stat.maxHP;
 		this.IsDead = false;
 		this._agent.speed = stat.moveSpeed;
-		this._perceiveArea.GetComponent<SphereCollider>().radius = this.stat.perceiveRange / 2.0375f; // Inv Scale
-		this._perceiveArea.GetComponent<SphereCollider>().radius = this.stat.attackRange / 2.0375f; // Inv Scale
+		//this._perceiveArea.GetComponent<SphereCollider>().radius = this.stat.perceiveRange / 2.0375f; // Inv Scale
+		//this._perceiveArea.GetComponent<SphereCollider>().radius = this.stat.attackRange / 2.0375f; // Inv Scale
 		this._animator.SetFloat("Attack Speed", stat.attackSpeed);
 		hpGuage.SetValue(1f);
 	}
@@ -535,7 +543,7 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 		if (MONSTER_SETTINGS.FACE)
 		{
 			_face.duration = 0.75f;
-			_face.OverrideTexture = _face.face.GetTexture(SlimeFace.Type.Damage);
+			_face.OverrideTexture = _face.face.GetTexture(SlimeFace.Type.DMG);
 		}
 	}
 	/// <summary>
@@ -588,14 +596,22 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
 
 	private void Return()
 	{
-		if (this.spawner != null)
-		{
-			this.spawner.OnSlimeDead(this);
-		}
-		else
-		{
-			Destroy(base.gameObject);
-		}
+        if (this.spawner != null)
+        {
+            this.spawner.OnSlimeDead(this);
+        }
+        else
+        {
+            if (this.king != null)
+            {
+                this.king.OnSeedDead(this);
+            }
+            else
+            {
+                Debug.Log("No Spawner -> Destroy");
+                Destroy(base.gameObject);
+            }
+        }
 	}
 	#endregion
 
@@ -613,13 +629,13 @@ public class ISlimeController : MonoBehaviour, IMonsterUID
     /// </summary>
     protected void Awake()
 	{
-		_face = GetComponent<SlimeFaceManager>();
+		_face = GetComponentInChildren<SlimeFaceManager>();
 		_animator = GetComponent<Animator>();
 		_agent = GetComponent<NavMeshAgent>();
 		hpGuage.Init();
 	}
 
-	public Vector3 spawnPoint;
+	[HideInInspector] public Vector3 spawnPoint;
 	/// <summary>
 	/// MonoBehaviour.OnEnable<br/>
 	/// 스폰 될 시 자동으로 호출되는 초기화 메서드<br/>

@@ -10,7 +10,7 @@ public class Player : MonoBehaviour
     public static JobType JT;
 
     public Stats stats = new Stats();
-    private All all = new All();
+    public All all = new All();
     public Stats Stats
     {
         get { return stats; }
@@ -29,8 +29,7 @@ public class Player : MonoBehaviour
     public float curMP;
     public int curexp;
 
-    /*public GameObject spawnPos;
-    public MeshCollider spawnpos;*/
+    public BoxCollider spawnPos;
 
     protected static BoxCollider weaponpos;
     protected delegate void OnOff();
@@ -72,9 +71,10 @@ public class Player : MonoBehaviour
         {
             if (ST == StateType.Playing) //Playing상태일 때만 대미지 받도록
             {
-                TS ma = other.GetComponent<TS>(); //테스트용 나중에 바꿀 것
-                curHP -= ma.damage;
-                Debug.Log(curHP);
+                Debug.Log("Ouch!");
+                //TS ma = other.GetComponent<TS>(); //테스트용 나중에 바꿀 것
+                //curHP -= ma.damage;
+                //Debug.Log(curHP);
                 StartCoroutine(DamageAction());
             }
         }
